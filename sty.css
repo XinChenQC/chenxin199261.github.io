@@ -1,0 +1,55 @@
+hr { 
+  display: block;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  border-style: inset;
+  border-width: 1px;
+  max-width:550px
+} 
+
+.para1 {
+  float: left;
+  width: 35.00%;
+  padding: 1px;
+}
+.para2 {
+  display: block;
+  width: 780px;
+  padding: 1px;
+  content: "";
+  clear: both;
+}
+.img-right {
+  float: left;
+  width: 180px;
+  padding: 5px;
+}
+.img-left {
+  float: left;
+  width: 180px;
+  padding: 8px;
+}
+
+.img2-right {
+  float: left;
+  padding: 5px;
+}
+.img2-left {
+  float: left;
+  padding: 8px;
+}
+
+
+.into:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+
+/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+@media screen and (max-width:400px) {
+  .para1, .img-right .img-left{
+    width: 100%;
+  }
+}
