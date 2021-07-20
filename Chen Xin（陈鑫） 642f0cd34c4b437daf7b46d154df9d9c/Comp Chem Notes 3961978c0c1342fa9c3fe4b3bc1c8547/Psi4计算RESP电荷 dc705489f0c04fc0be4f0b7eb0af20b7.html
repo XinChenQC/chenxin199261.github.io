@@ -1,0 +1,759 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Psi4计算RESP电荷</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+}
+.highlight-gray {
+	color: rgb(155,154,151);
+}
+.highlight-brown {
+	color: rgb(100,71,58);
+}
+.highlight-orange {
+	color: rgb(217,115,13);
+}
+.highlight-yellow {
+	color: rgb(223,171,1);
+}
+.highlight-teal {
+	color: rgb(15,123,108);
+}
+.highlight-blue {
+	color: rgb(11,110,153);
+}
+.highlight-purple {
+	color: rgb(105,64,165);
+}
+.highlight-pink {
+	color: rgb(173,26,114);
+}
+.highlight-red {
+	color: rgb(224,62,62);
+}
+.highlight-gray_background {
+	background: rgb(235,236,237);
+}
+.highlight-brown_background {
+	background: rgb(233,229,227);
+}
+.highlight-orange_background {
+	background: rgb(250,235,221);
+}
+.highlight-yellow_background {
+	background: rgb(251,243,219);
+}
+.highlight-teal_background {
+	background: rgb(221,237,234);
+}
+.highlight-blue_background {
+	background: rgb(221,235,241);
+}
+.highlight-purple_background {
+	background: rgb(234,228,242);
+}
+.highlight-pink_background {
+	background: rgb(244,223,235);
+}
+.highlight-red_background {
+	background: rgb(251,228,228);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(55, 53, 47, 0.6);
+	fill: rgba(55, 53, 47, 0.6);
+}
+.block-color-brown {
+	color: rgb(100,71,58);
+	fill: rgb(100,71,58);
+}
+.block-color-orange {
+	color: rgb(217,115,13);
+	fill: rgb(217,115,13);
+}
+.block-color-yellow {
+	color: rgb(223,171,1);
+	fill: rgb(223,171,1);
+}
+.block-color-teal {
+	color: rgb(15,123,108);
+	fill: rgb(15,123,108);
+}
+.block-color-blue {
+	color: rgb(11,110,153);
+	fill: rgb(11,110,153);
+}
+.block-color-purple {
+	color: rgb(105,64,165);
+	fill: rgb(105,64,165);
+}
+.block-color-pink {
+	color: rgb(173,26,114);
+	fill: rgb(173,26,114);
+}
+.block-color-red {
+	color: rgb(224,62,62);
+	fill: rgb(224,62,62);
+}
+.block-color-gray_background {
+	background: rgb(235,236,237);
+}
+.block-color-brown_background {
+	background: rgb(233,229,227);
+}
+.block-color-orange_background {
+	background: rgb(250,235,221);
+}
+.block-color-yellow_background {
+	background: rgb(251,243,219);
+}
+.block-color-teal_background {
+	background: rgb(221,237,234);
+}
+.block-color-blue_background {
+	background: rgb(221,235,241);
+}
+.block-color-purple_background {
+	background: rgb(234,228,242);
+}
+.block-color-pink_background {
+	background: rgb(244,223,235);
+}
+.block-color-red_background {
+	background: rgb(251,228,228);
+}
+.select-value-color-default { background-color: rgba(206,205,202,0.5); }
+.select-value-color-gray { background-color: rgba(155,154,151, 0.4); }
+.select-value-color-brown { background-color: rgba(140,46,0,0.2); }
+.select-value-color-orange { background-color: rgba(245,93,0,0.2); }
+.select-value-color-yellow { background-color: rgba(233,168,0,0.2); }
+.select-value-color-green { background-color: rgba(0,135,107,0.2); }
+.select-value-color-blue { background-color: rgba(0,120,223,0.2); }
+.select-value-color-purple { background-color: rgba(103,36,222,0.2); }
+.select-value-color-pink { background-color: rgba(221,0,129,0.2); }
+.select-value-color-red { background-color: rgba(255,0,26,0.2); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="dc705489-f0c0-4fc0-be4f-0b7eb0af20b7" class="page sans"><header><h1 class="page-title">Psi4计算RESP电荷</h1><table class="properties"><tbody><tr class="property-row property-row-created_time"><th><span class="icon property-icon"><svg viewBox="0 0 14 14" style="width:14px;height:14px;display:block;fill:rgba(55, 53, 47, 0.4);flex-shrink:0;-webkit-backface-visibility:hidden" class="typesCreatedAt"><path d="M6.98643729,14.0000972 C5.19579566,14.0000972 3.40419152,13.3106896 2.04245843,11.9323606 C-0.681017475,9.21200555 -0.680780251,4.76029539 2.04293482,2.04012507 C4.76664406,-0.68004331 9.22427509,-0.68004331 11.9480135,2.04013479 C13.272481,3.36277455 14,5.1330091 14,6.99552762 C14,8.87640182 13.2721894,10.6285043 11.9480135,11.9509302 C10.5679344,13.3105924 8.77756503,14.0000972 6.98643729,14.0000972 Z M10.2705296,7.00913883 L10.2705296,8.46099754 L10.2705296,8.65543362 L10.076181,8.65543362 L8.6543739,8.65543362 L5.72059514,8.65543362 L5.52619796,8.65543362 L5.52619796,8.46099754 L5.52619796,5.52541044 L5.52619796,3.37946773 L5.52619796,3.18502193 L5.72059514,3.18502193 L7.17253164,3.18502193 L7.36692883,3.18502193 L7.36692883,3.37946773 L7.36692883,6.81467358 L10.076181,6.81467358 L10.2705296,6.81467358 L10.2705296,7.00913883 Z M12.1601539,6.99552762 C12.1601539,5.61697497 11.6190112,4.32597154 10.6393933,3.34769528 C8.63253764,1.34336744 5.35197452,1.34061603 3.34153136,3.33944106 C3.33868273,3.34219247 3.33607716,3.34494388 3.33322852,3.34769528 C1.32397148,5.35459953 1.32372842,8.63641682 3.33322852,10.6433794 C5.34295224,12.6504489 8.62968901,12.6504489 10.6393933,10.6433794 C11.6190112,9.66506426 12.1601539,8.37408027 12.1601539,6.99552762 Z"></path></svg></span>Created</th><td><time>@July 11, 2021 11:36 AM</time></td></tr><tr class="property-row property-row-multi_select"><th><span class="icon property-icon"><svg viewBox="0 0 14 14" style="width:14px;height:14px;display:block;fill:rgba(55, 53, 47, 0.4);flex-shrink:0;-webkit-backface-visibility:hidden" class="typesMultipleSelect"><path d="M4,3 C4,2.447715 4.447715,2 5,2 L12,2 C12.5523,2 13,2.447716 13,3 C13,3.55228 12.5523,4 12,4 L5,4 C4.447715,4 4,3.55228 4,3 Z M4,7 C4,6.447715 4.447715,6 5,6 L12,6 C12.5523,6 13,6.447716 13,7 C13,7.55228 12.5523,8 12,8 L5,8 C4.447715,8 4,7.55228 4,7 Z M4,11 C4,10.447715 4.447715,10 5,10 L12,10 C12.5523,10 13,10.447716 13,11 C13,11.55228 12.5523,12 12,12 L5,12 C4.447715,12 4,11.55228 4,11 Z M2,4 C1.44771525,4 1,3.55228475 1,3 C1,2.44771525 1.44771525,2 2,2 C2.55228475,2 3,2.44771525 3,3 C3,3.55228475 2.55228475,4 2,4 Z M2,8 C1.44771525,8 1,7.55228475 1,7 C1,6.44771525 1.44771525,6 2,6 C2.55228475,6 3,6.44771525 3,7 C3,7.55228475 2.55228475,8 2,8 Z M2,12 C1.44771525,12 1,11.5522847 1,11 C1,10.4477153 1.44771525,10 2,10 C2.55228475,10 3,10.4477153 3,11 C3,11.5522847 2.55228475,12 2,12 Z"></path></svg></span>Tags</th><td><span class="selected-value select-value-color-yellow">公众号投稿</span></td></tr></tbody></table></header><div class="page-body"><h2 id="8caa4e25-d35c-408c-9bf3-e34c52db09e3" class="">1. RESP电荷计算</h2><p id="e1ace24d-3dda-45b7-a5fb-1a44936cc410" class="">有很多不同的方案能把分子的电荷分布投射到原子上，例如Mulliken、Löwdin以及NPA电荷等。还有基于拟合静电势的电荷，如CHELPG、Merz-Kollman (MK)和RESP电荷。RESP电荷因在AMBER和GAFF力场中的使用而闻名。</p><p id="acc76bef-a9a4-48cc-bd93-57833f79e205" class="">能直接计算RESP电荷的量化计算软件并不多。往往需要额外的波函数分析工具去辅助计算RESP电荷。例如可以通过Gaussian/GAMESS与R.E.D.(The RESP and ESP charge Derive)的联合使用计算，用Multiwfn进行分析计算RESP，或者用Amber提供的工具进行计算。</p><p id="21b2d270-26d7-4256-994c-5c515ade4f09" class="">Psi4量子化学计算包提供了RESP计算模块，让我们能从头到尾用一个软件完成整个的RESP电荷计算。这个计算模块提供<strong>用户定义约束等价原子电荷</strong>的功能以及对<strong>多个构象进行加权处理</strong>。作者采用Connolly分子表面生成格点进行计算。可以进行<strong>两步优化</strong>，即先不开启对称性约束以及小的约束强度进行对极性部分进行拟合，然后第二步拟合加上对称性限制，拟合CH<style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mn>3</mn></msub></mrow><annotation encoding="application/x-tex">_3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.45110799999999995em;vertical-align:-0.15em;"></span><span class="mord"><span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span>以及CH<style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.45110799999999995em;vertical-align:-0.15em;"></span><span class="mord"><span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span>的电荷分布。</p><p id="351ec2fd-ddc5-4a01-913e-5ca4afc24f9a" class="">如果用户有Psi4使用经验或者会Python，很容易就能就行计算。没有相关经验或者只会Python的简单使用，可以用我的计算模板，稍微修改就能快速计算。</p><h2 id="32165c42-098d-4a1c-b9dd-90f5ff201bec" class="">2. Psi4的使用（PsiAPI为例）</h2><p id="15ca37e0-ae7a-4c16-91aa-9037a6dd6c04" class="">Psi4的安装可以参考公众号之前的文章（1，2），建议下载预编译版本或者用Docker镜像运行程序。我用的版本是Psi4conda-1.4rc3-py39-Linux-x86_64.sh。另外，Psi4还支持wsl2版以及windows版，建议大家试试。</p><p id="c6438371-3a02-401d-9acc-9a96e3c7f3a6" class="">Psi4有两种使用模式，一种是类似大多数常规程序的可执行文件运行输入文件控制方法（Psithon），另一种是写个Python脚本与Psi4交互的方式（PsiAPI）。我目前只会第二种，而且第二种方式更加灵活。</p><h3 id="8ede80d6-48e0-4328-bce7-07d44fa658d6" class="">2.1参数设置</h3><p id="b4647cbf-0579-4e2a-9257-26e2b3468b5d" class="">参数分为两大部分，一个是全局参数设置，一个是RESP计算的参数设计。</p><p id="b17939a1-1506-4e18-80a1-867e5fbc47de" class="">全局参数设置控制整体量化计算是开壳层还是闭壳层。通过psi4.set_options方法指定。例如</p><pre id="b43b2f79-9b97-4554-a6b7-1b86e118ed7b" class="code"><code>psi4.set_options({&#x27;reference&#x27;: &#x27;rks&#x27;,     # 闭壳层Kohn-Sham计算,
+                  &#x27;scf_type&#x27; : &#x27;direct&#x27;}) # 不采用density-fitting，直接计算电子积分</code></pre><p id="5d543c3e-ce81-457c-9788-f9c1894e9f63" class="">更多设置请参照手册。</p><p id="8024ebac-bad4-42b9-8c25-331e5b95e1e6" class="">RESP参数设置如下：</p><pre id="671b9542-ee41-41bc-bce9-d9a3fc5843d0" class="code"><code>options = 
+ {&#x27;VDW_SCALE_FACTORS&#x27;  : [1.4, 1.6, 1.8, 2.0],   #不同壳层格点生成设置(建议默认)
+  &#x27;VDW_POINT_DENSITY&#x27;  : 1.0,                   #格点密度，1点每Å^2(建议默认)
+  &#x27;RESP_A&#x27;             : 0.0005,                #第一步参数，越小约束越弱(建议默认)
+  &#x27;RESP_B&#x27;             : 0.1,                   #约束参数(建议默认)
+  &#x27;RESTRAINT&#x27;          : True,                  #RESP计算必须开启(建议默认)
+  &#x27;IHFREE&#x27;             : False,            #是否约束氢，False为对氢进行约束。
+  &#x27;CONSTRAINT_GROUP&#x27;   : [[4,2],[8,6],[11,3],[12,7]], #原子[4,2],[8,6]... 定义为等价原子
+  &#x27;WEIGHT&#x27;             : [1, 1, 1],                    #三个构象，构象的权重
+  &#x27;METHOD_ESP&#x27;         : &quot;b3lyp&quot;,         #计算级别
+  &#x27;BASIS_ESP&#x27;          : &quot;cc-pvtz&quot;        #基组
+ }</code></pre><p id="20e0b426-1cba-4bdf-89a7-3a75bdc92a2d" class="">用户需根据体系指定开壳层或闭壳层计算（&#x27;scf_type&#x27;），以及指定等价原子（&#x27;CONSTRAINT_GROUP&#x27;），其余的建议默认。</p><h3 id="3be40f9a-890c-4d19-9542-eeeb033308e7" class="">2.2分子结构设置</h3><p id="fcf75f38-4a3a-42cc-bba1-a10acda87032" class="">以有三个构象的CF<style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mn>3</mn></msub></mrow><annotation encoding="application/x-tex">_3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.45110799999999995em;vertical-align:-0.15em;"></span><span class="mord"><span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span>CH<style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.45110799999999995em;vertical-align:-0.15em;"></span><span class="mord"><span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span>OH为例，三个构象通过如下方式指定。</p><pre id="bf9c8731-fe58-4591-ae02-79cbc830273c" class="code"><code># Initialize three different conformations of ethanol
+geometry = &quot;&quot;&quot;
+0 1
+C    0.00000000  0.00000000  0.00000000
+C    1.48805540 -0.00728176  0.39653260
+O    2.04971655  1.37648153  0.25604810
+H    3.06429978  1.37151670  0.52641124
+H    1.58679428 -0.33618761  1.43102358
+H    2.03441010 -0.68906454 -0.25521028
+F   -0.40814044 -1.00553466  0.10208540
+F   -0.54635470  0.68178278  0.65174288
+F   -0.09873888  0.32890585 -1.03449097
+&quot;&quot;&quot;
+mol1 = psi4.geometry(geometry)
+mol1.update_geometry()
+mol1.set_name(&#x27;conformer1&#x27;)
+
+geometry = &quot;&quot;&quot;
+0 1
+C    0.00000000  0.00000000  0.00000000
+C    1.48013500 -0.00724300  0.39442200
+O    2.00696300  1.29224100  0.26232800
+H    2.91547900  1.25572900  0.50972300
+H    1.61500700 -0.32678000  1.45587700
+H    2.07197500 -0.68695100 -0.26493400
+F   -0.32500012  1.02293415 -0.30034094
+F   -0.18892141 -0.68463906 -0.85893815
+F   -0.64257065 -0.32709111  0.84987482
+&quot;&quot;&quot;
+mol2 = psi4.geometry(geometry)
+mol2.update_geometry()
+mol2.set_name(&#x27;conformer2&#x27;)
+
+geometry = &quot;&quot;&quot;
+0 1
+C    0.00000000  0.00000000  0.00000000
+C    1.48805540 -0.00728176  0.39653260
+O    2.04971655  1.37648153  0.25604810
+H    3.06429978  1.37151670  0.52641124
+H    1.58679428 -0.33618761  1.43102358
+H    2.03441010 -0.68906454 -0.25521028
+F   -0.27127997 -0.97245518 -0.41089913
+F   -0.60950912  0.20545158  0.87999334
+F   -0.17244493  0.77215758 -0.74975690
+&quot;&quot;&quot;
+mol3 = psi4.geometry(geometry)
+mol3.update_geometry()
+mol3.set_name(&#x27;conformer3&#x27;)
+
+molecules = [mol1, mol2, mol3]</code></pre><p id="0f846595-96a8-4f69-8584-2747c2b098bc" class="">分子自旋多重度、电荷与坐标指定方式与Gaussian的输入文件约定相同。用户可以根据上述模板自行修改或添加、减少构象。</p><h3 id="a05d6005-8593-4afd-ba0f-9df3f0439006" class="">2.3 运行与结果得出</h3><p id="82b52682-4369-4e33-bbe0-1f64862d8840" class="">计算的整体脚本如下，脚本修改自Psi4的测试文件。这个脚本写了完整的RESP两步计算。</p><pre id="d040125a-d5e1-4ebd-8dea-c26f80c4e9bc" class="code"><code>import psi4
+import resp
+
+# Initialize three different conformations of ethanol
+geometry = &quot;&quot;&quot;
+0   1
+    C   -0.2753000000       -2.2228000000        0.0000000000
+    C    1.0407000000       -1.7594000000        0.0000000000
+    C   -1.0775000000        0.0564000000        0.0000000000
+    C   -1.3343000000       -1.3149000000        0.0000000000
+    H   -0.4776000000       -3.3036000000        0.0000000000
+    H    1.8753000000       -2.4754000000        0.0000000000
+    H   -1.9127000000        0.7719000000        0.0000000000
+    H   -2.3715000000       -1.6800000000        0.0000000000
+    C    0.5221000000        2.0333000000        0.0000000000
+    H    1.5322000000        2.3862000000        0.0000000000
+    C    1.2975000000       -0.3886000000        0.0000000000
+    H    2.3254000000       -0.0916000000        0.0000000000
+    C    0.2381000000        0.5197000000        0.0000000000
+    O   -0.4298000000        2.8564000000        0.0000000000
+&quot;&quot;&quot;
+
+psi4.set_options({&#x27;reference&#x27;: &#x27;rhf&#x27;,
+                  &#x27;scf_type&#x27; : &#x27;direct&#x27;})
+
+mol1 = psi4.geometry(geometry)
+mol1.update_geometry()
+mol1.set_name(&#x27;conformer1&#x27;)
+molecules = [mol1]
+
+# Specify options
+options = {&#x27;VDW_SCALE_FACTORS&#x27; : [1.4, 1.6, 1.8, 2.0],
+           &#x27;VDW_POINT_DENSITY&#x27;  : 1.0,
+           &#x27;RESP_A&#x27;             : 0.0005,
+           &#x27;RESP_B&#x27;             : 0.1,
+           &#x27;RESTRAINT&#x27;          : True,
+           &#x27;IHFREE&#x27;             : False,
+           &#x27;CONSTRAINT_GROUP&#x27;   : [[4,2],[8,6],[11,3],[12,7]]
+# Call for first stage fit
+charges1 = resp.resp(molecules, options)
+
+print(&quot;Restrained Electrostatic Potential Charges&quot;)
+print(charges1[1])
+
+options[&#x27;RESP_A&#x27;] = 0.001
+resp.set_stage2_constraint(molecules[0], charges1[1], options)
+
+options[&#x27;grid&#x27;] = []
+options[&#x27;esp&#x27;] = []
+# Add constraint for atoms fixed in second stage fit
+for mol in range(len(molecules)):
+    options[&#x27;grid&#x27;].append(&#x27;%i_%s_grid.dat&#x27; %(mol+1, molecules[mol].name()))
+    options[&#x27;esp&#x27;].append(&#x27;%i_%s_grid_esp.dat&#x27; %(mol+1, molecules[mol].name()))
+
+# Call for second stage fit
+charges2 = resp.resp(molecules, options)
+print(&quot;\nStage Two\n&quot;)
+print(&quot;RESP Charges&quot;)
+print(charges2[1])</code></pre><p id="e989a306-c1d4-4ce2-a69c-e70394801d8c" class="">执行 <code>python test.py &gt; out</code> 计算结果会被重定向到out文件中，再out最后一行，可以看到RESP电荷。</p><pre id="de24cb05-a260-4ed7-9884-4be546b2effb" class="code"><code>Stage Two
+RESP Charges
+[ 0.5935773   0.06749319 -0.6303203   0.40224024  0.0254598   0.0254598
+ -0.16130334 -0.16130334 -0.16130334]</code></pre><p id="7f29f15e-bfc3-4b2d-ba61-761283234281" class="">程序开发者测试显示，Psi4的RESP计算结果与R.E.D. 计算结果误差小于<style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><msup><mn>0</mn><mrow><mo>−</mo><mn>4</mn></mrow></msup></mrow><annotation encoding="application/x-tex">10^{-4}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">4</span></span></span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span>。</p><h2 id="58f5fb22-20e5-46f4-847e-d6a33f4c6e3d" class="">3. 更多计算模板</h2><p id="b4c5fa0a-f8e3-4a3b-8351-d2a7e311b6fb" class="">用户的计算是非常简单的，只需要将自己的体系套入到模板中，运行即可快速得到结果。脚本可以在以下地址中下载，</p><p id="40787f5a-2fd4-4444-b7d9-7464559c96c9" class=""><a href="https://github.com/chenxin199261/QM-Templates/tree/main/Psi4-RESP">https://github.com/chenxin199261/QM-Templates/tree/main/Psi4-RESP</a></p><p id="04daf8df-b786-4b64-b03d-c2965d6ea26a" class="">我为大家准备了开壳层、闭壳层计算以及多个构象计算的模板。</p><p id="14122a4e-c97e-460d-9999-f3380e77eb3e" class="">使用Psi4计算RESP不要忘记引用RESP模块以及Psi4本体程序。</p><h2 id="d6bc9c96-fa6c-4697-9017-fd4cdd2c4c4b" class="">4.参考资料</h2><p id="1a0e73fd-2cec-4126-9563-f9a645b3443f" class=""><a href="https://github.com/cdsgroup/resp">https://github.com/cdsgroup/resp</a></p><p id="8d84c4be-c483-48ee-ac0f-50baa8fa6b20" class=""><a href="https://onlinelibrary.wiley.com/doi/10.1002/qua.26035">https://onlinelibrary.wiley.com/doi/10.1002/qua.26035</a></p><p id="821b82aa-792b-48bd-9abe-eab87aab3b73" class="">
+</p></div></article></body></html>
