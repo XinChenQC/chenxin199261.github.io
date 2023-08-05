@@ -1,0 +1,853 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>NEB方法寻找过渡态（Gaussian与ASE联用）</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-interactiveBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="7c404106-8c5f-47d2-bc62-e6b935d8ac22" class="page sans"><header><h1 class="page-title">NEB方法寻找过渡态（Gaussian与ASE联用）</h1><p class="page-description"></p><table class="properties"><tbody><tr class="property-row property-row-created_time"><th><span class="icon property-icon"><svg role="graphics-symbol" viewBox="0 0 16 16" style="width:14px;height:14px;display:block;fill:rgba(55, 53, 47, 0.45);flex-shrink:0" class="typesCreatedAt"><path d="M8 15.126C11.8623 15.126 15.0615 11.9336 15.0615 8.06445C15.0615 4.20215 11.8623 1.00293 7.99316 1.00293C4.13086 1.00293 0.938477 4.20215 0.938477 8.06445C0.938477 11.9336 4.1377 15.126 8 15.126ZM8 13.7383C4.85547 13.7383 2.33301 11.209 2.33301 8.06445C2.33301 4.91992 4.84863 2.39746 7.99316 2.39746C11.1377 2.39746 13.6738 4.91992 13.6738 8.06445C13.6738 11.209 11.1445 13.7383 8 13.7383ZM4.54102 8.91211H7.99316C8.30078 8.91211 8.54004 8.67285 8.54004 8.37207V3.8877C8.54004 3.58691 8.30078 3.34766 7.99316 3.34766C7.69238 3.34766 7.45312 3.58691 7.45312 3.8877V7.83203H4.54102C4.2334 7.83203 4.00098 8.06445 4.00098 8.37207C4.00098 8.67285 4.2334 8.91211 4.54102 8.91211Z"></path></svg></span>Created</th><td><time>@November 9, 2021 6:03 PM</time></td></tr><tr class="property-row property-row-multi_select"><th><span class="icon property-icon"><svg role="graphics-symbol" viewBox="0 0 16 16" style="width:14px;height:14px;display:block;fill:rgba(55, 53, 47, 0.45);flex-shrink:0" class="typesMultipleSelect"><path d="M1.91602 4.83789C2.44238 4.83789 2.87305 4.40723 2.87305 3.87402C2.87305 3.34766 2.44238 2.91699 1.91602 2.91699C1.38281 2.91699 0.952148 3.34766 0.952148 3.87402C0.952148 4.40723 1.38281 4.83789 1.91602 4.83789ZM5.1084 4.52344H14.3984C14.7607 4.52344 15.0479 4.23633 15.0479 3.87402C15.0479 3.51172 14.7607 3.22461 14.3984 3.22461H5.1084C4.74609 3.22461 4.45898 3.51172 4.45898 3.87402C4.45898 4.23633 4.74609 4.52344 5.1084 4.52344ZM1.91602 9.03516C2.44238 9.03516 2.87305 8.60449 2.87305 8.07129C2.87305 7.54492 2.44238 7.11426 1.91602 7.11426C1.38281 7.11426 0.952148 7.54492 0.952148 8.07129C0.952148 8.60449 1.38281 9.03516 1.91602 9.03516ZM5.1084 8.7207H14.3984C14.7607 8.7207 15.0479 8.43359 15.0479 8.07129C15.0479 7.70898 14.7607 7.42188 14.3984 7.42188H5.1084C4.74609 7.42188 4.45898 7.70898 4.45898 8.07129C4.45898 8.43359 4.74609 8.7207 5.1084 8.7207ZM1.91602 13.2324C2.44238 13.2324 2.87305 12.8018 2.87305 12.2686C2.87305 11.7422 2.44238 11.3115 1.91602 11.3115C1.38281 11.3115 0.952148 11.7422 0.952148 12.2686C0.952148 12.8018 1.38281 13.2324 1.91602 13.2324ZM5.1084 12.918H14.3984C14.7607 12.918 15.0479 12.6309 15.0479 12.2686C15.0479 11.9062 14.7607 11.6191 14.3984 11.6191H5.1084C4.74609 11.6191 4.45898 11.9062 4.45898 12.2686C4.45898 12.6309 4.74609 12.918 5.1084 12.918Z"></path></svg></span>Tags</th><td><span class="selected-value select-value-color-gray">ASE</span><span class="selected-value select-value-color-purple">Gaussian</span><span class="selected-value select-value-color-yellow">公众号投稿</span></td></tr></tbody></table></header><div class="page-body"><p id="fb442b73-34a6-4cf5-9314-27ad2d1d0c77" class="">寻找过渡态是个棘手的工作，如果尝尽了各种办法（软扫描、换计算精度等）都找不到过渡态，那么不妨尝试下NEB方法。</p><p id="2c857b41-06e5-45f4-a3ff-5dd62e8b73ce" class="">一串弹簧连接珠子放到马鞍上，那么珠子串在重力与之间弹簧拉力共同作用下会分布在马鞍的“最低能量路径”上。NEB方法利用类似原理，生成一串连接反应物与产物的珠子，经过优化，珠子构成的路径就是势能面上的能量最低路径（MEP），能量最高点与过渡态结构相近。</p><p id="b8153ea9-bd8c-4887-8109-6bc67db531f1" class="">使用NEB方法的应用场景是，用户已经找到反应物与产物稳定结构，且Gaussian的QST2、QST3尝试失败。</p><h2 id="e4693b7a-a4ca-4808-a1d3-1e9de5695352" class="">ASE简介与安装</h2><p id="80e96795-91d2-4d7d-9eef-b7d4ffe4401d" class="">ASE 全程 Atomic Simulation Environment，是一个操作原子的python环境。它被设计成一个平台，提供了调用多种量化计算软件的接口，通过调用这些量化软件得到需要的信息，从而完成稍微复杂的组合计算。它提供一些算法优化结构、找过渡态、寻找全局最小值点，也能用进行MD模拟或者NEB计算。ASE用户大多来自材料模拟领域。使用该环境需要用户有一定的python编程基础，因为用户需要编写一个脚本完成一套组合计算。</p><p id="11161e3a-e056-4e44-80d0-2c60b9d639a3" class="">本文讲解Gaussian与ASE联用进行NEB计算。ASE的安装非常简单，只需要用户执行，</p><p id="b2d22958-2856-4376-9432-072912faa978" class=""> <code>pip install --upgrade --user ase</code></p><p id="7351b7dc-0568-4357-b391-fb4a62ac2f1c" class="">如果没有网络，用户可以尝试在有网络的环境下将ASE与Gaussian打包成docker镜像，传到服务器上。</p><p id="6cdd98dc-ff1f-4514-9eea-beb5c81d5f2c" class="">运行python，如果import ase成功，则说明ASE安装成功。另外机器里需要安装了Gaussian。</p><h2 id="aba7fe7b-e8db-45a3-a7df-1689e3f20d0d" class="">计算脚本的编写</h2><p id="a5924781-9122-4e13-8447-0412dc093f35" class="">先把需要的类与方法导入
+</p><pre id="f7fcd419-ba8c-47e8-b250-763314d93275" class="code"><code>from ase import Atoms,io
+from ase.io import iread,read
+from ase.build import minimize_rotation_and_translation
+from ase.optimize import BFGS,MDMin
+from ase.neb import NEB
+from ase.parallel import world
+from ase.calculators.gaussian import Gaussian
+import os
+import sys</code></pre><h3 id="70dc8fd0-9434-4b87-9837-b30878759b24" class="">1. 输入反应物、产物结构</h3><p id="c2bc955e-f68f-404e-8f82-2707b9bdb7cd" class="">将反应物、产物存为xyz格式。本文中反应物为A.xyz，产物是B.xyz。之后削减两个结构之间的RMSD[cite Kerbash算法]。</p><pre id="ba60ab86-44d4-4c7a-8316-d07ad3458a72" class="code"><code>reac = read(&#x27;A.xyz&#x27;)  # Reactant saved in A.xyz
+prod = read(&#x27;B.xyz&#x27;)  # Product saved in B.xyz
+minimize_rotation_and_translation(reac,prod) # Reduce RMSD between reac and prod</code></pre><p id="ec007ed5-f588-4900-9275-80716db8e442" class="">这样反应物、产物便被实例化为reac和prod，他们属于ASE中的Atoms类，可以理解为一个分子。</p><h3 id="26440f7a-c784-42fe-abc4-48649b642317" class="">2. 定义与gaussian的接口</h3><p id="232cf6ae-ee05-4536-bd96-229a340420c0" class="">与gaussian的接口定义在calculator类中。我们通过以下方法定义calculator，这些calculator决定了Gaussian完成什么样的计算。</p><pre id="dfa82056-8209-4234-908d-daf4fff05c9b" class="code"><code>gauss_CALC = Gaussian(label=&#x27;calc/gaussian&#x27;, # Calculation file name
+                       nprocshared=&quot;32&quot;,       # %nprocshared in Gaussian
+                       mem=&#x27;5GB&#x27;,              # %mem in Gaussian
+                       xc=&#x27;m06l&#x27;,              # functional 
+                       basis=&#x27;def2svp&#x27;,        # basis set
+                       ioplist=[&quot;2/9=2000&quot;],   # Must add, avoid standard rotation
+                       scf=&#x27;maxcycle=100&#x27;)     # scf options</code></pre><p id="23ec9199-3e74-456d-bdb6-1bee35db8391" class=""><strong>需要注意的是，Gaussian计算会旋转分子到standard orientation，必须加入ioplist=[&quot;2/9=2000&quot;]以防止分子旋转。</strong>我们实例化了一个gauss_CALC，这是与gaussian的接口。下文会用到。</p><h3 id="1b384d46-fc1b-45da-942c-caa122ca4908" class="">3. 计算反应物、产物的能量</h3><p id="b36b6010-1143-4da5-9c59-cd2e059bba3e" class="">反应物、产物在计算中不进行结构优化。因此建议计算下这两个结构的能量。</p><pre id="60768431-3e78-41ba-a4b8-c813d5e289fa" class="code"><code>reac.calc = gauss_CALC              # define calculator for reactant
+reac.calc.label = &quot;calc/gaussianr&quot;  # Rename Gaussian File for reactant
+E = reac.get_potential_energy()     # calculate reactant energy
+print(&quot;Single-point energy of reactant: &quot;,E)
+
+prod.calc = gauss_CALC              # define calculator for product
+prod.calc.label = &quot;calc/gaussianp&quot;  # Rename Gaussian File for product
+E = prod.get_potential_energy()     # calculate product energy 
+print(&quot;Single-point energy of product: &quot;,E)</code></pre><h3 id="acdec98b-40f4-4229-9aa4-0278a35c6b52" class="">4.  定义NEB</h3><p id="e377024b-2a5c-4d65-b7ea-7b9ecf768523" class="">在这里，我们在string上定义21个beads（不含反应物与产物）。指定方法为将首（反应物）与尾（产物）之间进行线性插值。</p><pre id="b524cf95-4288-48d9-8b03-be2d7a91662a" class="code"><code>Nbeads=21                                            
+images = [reac]                                      
+images += [reac.copy() for i in range(Nbeads)]       
+images += [prod]                                     
+i = 0                                                
+for image in images:                                 
+    i = i+1                                          
+    image.calc = deepcopy(gauss_CALC)                
+    image.calc.label=&#x27;calc/gaussian&#x27;+str(i)               
+neb = NEB(images)                                    
+neb.interpolate()     # Interpolate the images Linearly</code></pre><h3 id="9e7ba1d2-abe1-4d80-b1c4-4ecf59a72b69" class="">5. 优化NEB</h3><p id="7e63003e-ea97-4667-8bf2-77cd5a0ecd4e" class="">dt是优化步长，建议比默认值小一些。fmax是收敛阈，当这个NEB上每个beads受力很小时候，我们认为优化结束。</p><pre id="88d77d90-3584-43dc-9966-b431255a7a56" class="code"><code>optimizer = MDMin(neb, trajectory=&#x27;A2B4.traj&#x27;,dt=0.05)
+optimizer.run(fmax=0.05)</code></pre><pre id="199e1215-16b7-41a0-bc4f-f859d6a9816e" class="code"><code>###neb for multi points interpolate
+from ase import Atoms,io
+from ase.io import iread,read
+from ase.build import minimize_rotation_and_translation
+from ase.optimize import BFGS,MDMin
+from ase.neb import NEB
+from ase.parallel import world
+from ase.calculators.gaussian import Gaussian
+import os
+import sys
+from ase.io.trajectory import Trajectory
+from ase.io import write
+import io, os, copy
+os.environ[&quot;OMP_NUM_THREADS&quot;] = &quot;8&quot;
+os.environ[&quot;MKL_NUM_THREADS&quot;] = &quot;8&quot;
+os.environ[&quot;OMP_STACKSIZE&quot;] = &quot;8G&quot;
+
+E = 0
+Nbeads=21
+TS_guess_num = 1
+## Define Structures
+reacStruct = &quot;A.xyz&quot;
+prodStruct = &quot;B.xyz&quot;
+TSs =[&quot;TS1.xyz&quot;, &quot;TS2.xyz&quot;]
+
+#QM Calculator
+
+CalcTemplate = Gaussian(label=&#x27;calc/gaussianr&#x27;,
+                        nprocshared=&quot;2&quot;,
+                        mem=&#x27;5GB&#x27;,
+                        xc=&#x27;pbepbe&#x27;,
+                        basis=&#x27;sto-6g&#x27;,
+                        ioplist=[&quot;2/9=2000&quot;],
+                        scf=&#x27;maxcycle=100,xqc&#x27;)
+
+
+def outputAtomstoXYZ(Stringatoms,fname):
+
+    string = &#x27;structure&#x27;
+
+    #get current working directory and make a scratch
+    #directory
+    path = os.getcwd()
+    path = path + &#x27;/scratch&#x27;
+    if not os.path.exists(path): os.makedirs(path)
+
+    #output file name
+    outFileName = fname
+    if(os.path.exists(fname)):os.remove(fname)
+    #write each structure from the .traj file in .xyz format
+    for img in Stringatoms:
+        string = &#x27;structure%03d&#x27; % (i,) +&#x27;.xyz&#x27;
+        outStruct = os.path.join(path, string)
+        write(outStruct,img)
+    #combines all optimization structures in one trajectory
+    #file
+        inFile = open(os.path.join(path, &#x27;structure%03d&#x27; %
+                      (i,)  +&#x27;.xyz&#x27;), &#x27;r&#x27;)
+        fileStr = inFile.read()
+        outFile = open(outFileName, &#x27;a&#x27;)
+        outFile.write(fileStr)
+
+## 1. Load Structures and generate string.
+
+### 1.0 Load structures in 
+reac = read(reacStruct)  # Reactant saved in 1.xyz
+prod = read(prodStruct) # Product saved in 1.xyz
+
+TS_List = []
+if(len(TSs)&gt;0):
+    for tsName in TSs:
+        TS_List.append(read(tsName))
+
+
+reac.calc = copy.deepcopy(CalcTemplate)
+reac.calc.label = &quot;R&quot;
+prod.calc = copy.deepcopy(CalcTemplate)
+prod.calc.label = &quot;P&quot;
+
+E = reac.get_potential_energy()
+E = prod.get_potential_energy()
+print(&quot;Single-point energy of reactant: &quot;,E)
+print(&quot;Single-point energy of product: &quot;,E)
+
+guessPointOnString  = [reac] + TS_List + [prod]
+
+### 1.1 Generate string
+nbeadsperPath = int(Nbeads/(1+len(TS_List)))
+beadsArrange = [nbeadsperPath for i in range(len(TS_List)+1)] 
+
+beadsArrange[-1] = int(Nbeads - nbeadsperPath*(1+len(TS_List)))+beadsArrange[-1]
+print(&quot;Beads on each paths &quot;,beadsArrange)
+
+
+imagesList = []
+for i in range(len(beadsArrange)):
+    if(i == len(beadsArrange)-1):
+        StrPoint = beadsArrange[i]-2
+        LenAdd = StrPoint+2 
+    else:
+        StrPoint = beadsArrange[i]-1
+        LenAdd = StrPoint+1
+
+    minimize_rotation_and_translation(guessPointOnString[i],guessPointOnString[i+1])
+    images =  [guessPointOnString[i]]
+    images += [guessPointOnString[i].copy() for j in range(StrPoint)]
+    images += [guessPointOnString[i+1]]
+    neb = NEB(images,climb=True)
+    neb.interpolate()
+    images = neb.images
+    for img in range(LenAdd):
+        imagesList.append(images[img])
+
+outFileName = &#x27;Guess.xyz&#x27;
+# Save string of guess
+outputAtomstoXYZ(imagesList,outFileName)
+print(len(imagesList))
+
+
+## 2. Optimize:
+Tag = 1
+for img in imagesList:
+    img.calc = copy.deepcopy(CalcTemplate)
+    img.calc.label=&#x27;calc/gaussian&#x27;+str(Tag)
+    Tag += 1
+neb = NEB(imagesList,climb=True)
+
+optimizer = MDMin(neb, trajectory=&#x27;A2B01.traj&#x27;,dt=0.5)
+optimizer.run(fmax=0.5)
+outputAtomstoXYZ(neb.images,&quot;opt05.xyz&quot;)
+
+optimizer = MDMin(neb, trajectory=&#x27;A2B01.traj&#x27;,dt=0.1)
+optimizer.run(fmax=0.1)
+outputAtomstoXYZ(neb.images,&quot;opt01.xyz&quot;)
+
+optimizer = MDMin(neb, trajectory=&#x27;A2B01.traj&#x27;,dt=0.1)
+optimizer.run(fmax=0.05)
+outputAtomstoXYZ(neb.images,&quot;opt005.xyz&quot;)
+
+optimizer = MDMin(neb, trajectory=&#x27;A2B001.traj&#x27;,dt=0.05)
+optimizer.run(fmax=0.01)
+outputAtomstoXYZ(neb.images,&quot;opt001.xyz&quot;)</code></pre></div></article></body></html>
