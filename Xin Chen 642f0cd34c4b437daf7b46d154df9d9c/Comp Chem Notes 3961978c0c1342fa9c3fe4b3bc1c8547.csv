@@ -1,9 +1,10 @@
 ﻿Name,Created,Tags
-LAMMPS-ReaxFF notes,"December 31, 2021 6:56 PM",
-安装Py-ChemShell,"August 7, 2021 3:08 AM",
->50 atoms in ASE gaussian calculation.,"April 12, 2021 9:23 AM","ASE, Gaussian"
-Save/load VMD visualization state,"April 30, 2021 10:29 PM",vmd
-GPU版GAMESS的快速安装,"May 22, 2021 10:44 PM","Chinese, 公众号投稿"
-Psi4计算RESP电荷,"July 11, 2021 11:36 AM",公众号投稿
-Colab中使用AlphaFold2,"July 25, 2021 2:31 PM","Chinese, 公众号投稿"
-NEB方法寻找过渡态（Gaussian与ASE联用）,"November 9, 2021 6:03 PM","ASE, Gaussian, 公众号投稿"
+LAMMPS-ReaxFF notes,"December 31, 2021 5:56 AM",
+安装Py-ChemShell,"August 6, 2021 3:08 PM",
+安装Open Source版PyMOL,"March 26, 2024 1:53 PM",python
+>50 atoms in ASE gaussian calculation.,"April 11, 2021 9:23 PM","ASE, Gaussian"
+Save/load VMD visualization state,"April 30, 2021 10:29 AM",vmd
+GPU版GAMESS的快速安装,"May 22, 2021 10:44 AM","Chinese, 公众号投稿"
+Psi4计算RESP电荷,"July 10, 2021 11:36 PM",公众号投稿
+Colab中使用AlphaFold2,"July 25, 2021 2:31 AM","Chinese, 公众号投稿"
+NEB方法寻找过渡态（Gaussian与ASE联用）,"November 9, 2021 5:03 AM","ASE, Gaussian, 公众号投稿"
